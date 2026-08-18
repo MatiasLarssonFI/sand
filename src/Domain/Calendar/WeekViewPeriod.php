@@ -31,6 +31,11 @@ final class WeekViewPeriod implements ViewPeriodInterface
         );
     }
 
+    public function cursorDate(): DateTimeImmutable
+    {
+        return $this->start;
+    }
+
     public function range(): TimeRange
     {
         return new TimeRange($this->start, $this->start->add(new DateInterval('P7D')));

@@ -6,6 +6,7 @@ namespace App\Infrastructure\Http;
 
 use App\Application\Calendar\CalendarQueryService;
 use App\Application\Event\EventService;
+use App\Domain\Shared\AuthorizationException;
 use App\Infrastructure\Security\SessionCsrfTokenManager;
 use App\Infrastructure\Security\SessionCurrentUserProvider;
 
@@ -21,9 +22,15 @@ final class EventApiController
 
     public function detail(Request $request, string $eventId): Response
     {
-        $actorId = (int) $this->currentUserProvider->currentUserId();
+        $actorId = $this->requireCurrentUserId();
         $event = $this->eventService->detail($actorId, (int) $eventId);
-        $state = $this->calendarQueryService->dashboard($actorId, $event->calendarId(), 'month', 'now', 4);
+        $state = $this->calendarQueryService->dashboard(
+            $actorId,
+            $event->calendarId(),
+            'day',
+            $event->timeRangeUtc()->start()->format('Y-m-d'),
+            2
+        );
 
         foreach ($state['events'] as $mappedEvent) {
             if ((int) $mappedEvent['id'] === $event->id()) {
@@ -37,7 +44,7 @@ final class EventApiController
     public function create(Request $request): Response
     {
         $this->csrfTokenManager->assertValid($request->header('X-CSRF-Token'));
-        $actorId = (int) $this->currentUserProvider->currentUserId();
+        $actorId = $this->requireCurrentUserId();
         $event = $this->eventService->create($actorId, $request->all());
 
         return Response::json(['id' => $event->id()], 201);
@@ -46,7 +53,7 @@ final class EventApiController
     public function update(Request $request, string $eventId): Response
     {
         $this->csrfTokenManager->assertValid($request->header('X-CSRF-Token'));
-        $actorId = (int) $this->currentUserProvider->currentUserId();
+        $actorId = $this->requireCurrentUserId();
         $event = $this->eventService->update($actorId, (int) $eventId, $request->all());
 
         return Response::json(['id' => $event->id()]);
@@ -55,9 +62,20 @@ final class EventApiController
     public function delete(Request $request, string $eventId): Response
     {
         $this->csrfTokenManager->assertValid($request->header('X-CSRF-Token'));
-        $actorId = (int) $this->currentUserProvider->currentUserId();
+        $actorId = $this->requireCurrentUserId();
         $this->eventService->delete($actorId, (int) $eventId);
 
         return Response::json(['ok' => true]);
+    }
+
+    private function requireCurrentUserId(): int
+    {
+        $userId = $this->currentUserProvider->currentUserId();
+
+        if ($userId === null) {
+            throw new AuthorizationException('No active user is available.');
+        }
+
+        return $userId;
     }
 }

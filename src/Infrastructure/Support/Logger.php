@@ -16,8 +16,10 @@ final class Logger
     {
         $directory = dirname($this->logFile);
 
-        if (!is_dir($directory)) {
-            mkdir($directory, 0775, true);
+        if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
+            error_log(sprintf('Unable to create log directory: %s', $directory));
+
+            return;
         }
 
         $message = sprintf(
@@ -29,6 +31,8 @@ final class Logger
             $throwable->getTraceAsString()
         );
 
-        file_put_contents($this->logFile, $message, FILE_APPEND);
+        if (file_put_contents($this->logFile, $message, FILE_APPEND) === false) {
+            error_log(sprintf('Unable to write log file: %s', $this->logFile));
+        }
     }
 }

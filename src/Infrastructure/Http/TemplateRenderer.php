@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Infrastructure\Http;
 
+use RuntimeException;
+
 final class TemplateRenderer
 {
     public function __construct(
@@ -14,8 +16,8 @@ final class TemplateRenderer
 
     public function render(string $template, array $data = []): string
     {
-        $templatePath = $this->templateDirectory . '/' . $template;
-        $layoutPath = $this->templateDirectory . '/layouts/main.php';
+        $templatePath = $this->resolvePath($template);
+        $layoutPath = $this->resolvePath('layouts/main.php');
         $variables = $this->shared + $data;
 
         extract($variables, EXTR_SKIP);
@@ -28,5 +30,17 @@ final class TemplateRenderer
         require $layoutPath;
 
         return (string) ob_get_clean();
+    }
+
+    private function resolvePath(string $template): string
+    {
+        $baseDirectory = realpath($this->templateDirectory);
+        $resolvedPath = realpath($this->templateDirectory . '/' . ltrim($template, '/'));
+
+        if ($baseDirectory === false || $resolvedPath === false || !str_starts_with($resolvedPath, $baseDirectory . DIRECTORY_SEPARATOR)) {
+            throw new RuntimeException('Invalid template path.');
+        }
+
+        return $resolvedPath;
     }
 }

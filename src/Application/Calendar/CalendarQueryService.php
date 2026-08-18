@@ -153,12 +153,15 @@ final class CalendarQueryService
     private function mapView(ViewPeriodInterface $viewPeriod): array
     {
         $range = $viewPeriod->range();
+        $days = $viewPeriod->days();
+        $lastDay = $days[array_key_last($days)] ?? $range->start();
 
         return [
             'type' => $viewPeriod->type(),
             'label' => $viewPeriod->label(),
+            'cursor' => $viewPeriod->cursorDate()->format('Y-m-d'),
             'start' => $range->start()->format('Y-m-d'),
-            'end' => $range->end()->modify('-1 day')->format('Y-m-d'),
+            'end' => $lastDay->format('Y-m-d'),
             'days' => array_map(
                 static fn (DateTimeImmutable $day) => [
                     'date' => $day->format('Y-m-d'),
@@ -167,7 +170,7 @@ final class CalendarQueryService
                     'month' => $day->format('M'),
                     'primary' => $viewPeriod->isPrimaryDay($day),
                 ],
-                $viewPeriod->days()
+                $days
             ),
         ];
     }

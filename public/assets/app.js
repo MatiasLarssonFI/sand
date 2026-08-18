@@ -5,7 +5,7 @@
     currentUserId: boot.currentUserId,
     calendarId: boot.state.selectedCalendar ? boot.state.selectedCalendar.id : null,
     view: boot.state.view ? boot.state.view.type : 'month',
-    date: boot.state.view ? boot.state.view.start : new Date().toISOString().slice(0, 10),
+    date: boot.state.view ? boot.state.view.cursor : new Date().toISOString().slice(0, 10),
     weeks: boot.defaultWeeks,
     payload: boot.state,
   };
@@ -76,8 +76,14 @@
 
   function shiftDate(step) {
     const date = new Date(`${currentDate()}T00:00:00`);
-    const delta = state.view === 'day' ? 1 : state.view === 'week' ? 7 : state.view === 'month' ? 31 : state.weeks * 7;
-    date.setDate(date.getDate() + (delta * step));
+
+    if (state.view === 'month') {
+      date.setMonth(date.getMonth() + step);
+    } else {
+      const delta = state.view === 'day' ? 1 : state.view === 'week' ? 7 : state.weeks * 7;
+      date.setDate(date.getDate() + (delta * step));
+    }
+
     state.date = date.toISOString().slice(0, 10);
   }
 
@@ -218,6 +224,7 @@
 
     state.payload = await request(`/api/calendar?${params.toString()}`, { headers: {} });
     state.calendarId = state.payload.selectedCalendar ? state.payload.selectedCalendar.id : null;
+    state.date = state.payload.view ? state.payload.view.cursor : state.date;
     render();
   }
 

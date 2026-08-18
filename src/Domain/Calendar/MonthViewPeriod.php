@@ -31,6 +31,11 @@ final class MonthViewPeriod implements ViewPeriodInterface
         return $this->monthStart->format('F Y');
     }
 
+    public function cursorDate(): DateTimeImmutable
+    {
+        return $this->monthStart;
+    }
+
     public function range(): TimeRange
     {
         return new TimeRange($this->gridStart, $this->gridEnd->add(new DateInterval('P1D')));

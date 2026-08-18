@@ -31,7 +31,7 @@ A simple shared calendar web app built as a layered PHP monolith with MariaDB pe
 ## Local setup
 
 1. Create a MariaDB database.
-2. Import `/home/runner/work/sand/sand/database/schema.sql`.
+2. Import `database/schema.sql`.
 3. Configure environment variables:
 
 ```bash
@@ -39,6 +39,7 @@ export APP_NAME="Shared Calendar"
 export APP_TIMEZONE="UTC"
 export APP_DEFAULT_VIEW="month"
 export APP_DEFAULT_WEEKS="4"
+export APP_SESSION_SECURE_COOKIE="0"
 export DB_HOST="127.0.0.1"
 export DB_PORT="3306"
 export DB_DATABASE="shared_calendar"
@@ -69,5 +70,6 @@ Upload the repository contents to your PHP hosting account so that the web root 
 1. Import `database/schema.sql` into MariaDB.
 2. Set the environment variables supported in `config/app.php` and `config/database.php`.
 3. Ensure the `storage/logs` directory is writable by PHP.
+4. Set `APP_SESSION_SECURE_COOKIE=1` when serving the app over HTTPS.
 
 No container, queue worker, or build pipeline is required.

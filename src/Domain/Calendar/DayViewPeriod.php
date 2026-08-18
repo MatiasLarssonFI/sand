@@ -24,6 +24,11 @@ final class DayViewPeriod implements ViewPeriodInterface
         return $this->anchor->format('D, j M Y');
     }
 
+    public function cursorDate(): DateTimeImmutable
+    {
+        return $this->anchor;
+    }
+
     public function range(): TimeRange
     {
         $start = $this->anchor->setTime(0, 0);

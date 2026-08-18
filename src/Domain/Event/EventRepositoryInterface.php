@@ -8,6 +8,10 @@ use App\Domain\Shared\TimeRange;
 
 interface EventRepositoryInterface
 {
+    public function lockCalendar(int $calendarId): void;
+
+    public function unlockCalendar(int $calendarId): void;
+
     /** @return Event[] */
     public function findByCalendarAndRange(int $calendarId, TimeRange $rangeUtc): array;
 

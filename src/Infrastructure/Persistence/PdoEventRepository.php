@@ -15,6 +15,22 @@ final class PdoEventRepository implements EventRepositoryInterface
     {
     }
 
+    public function lockCalendar(int $calendarId): void
+    {
+        $statement = $this->pdo->prepare('SELECT GET_LOCK(:lock_name, 10)');
+        $statement->execute(['lock_name' => sprintf('calendar_events_%d', $calendarId)]);
+
+        if ((int) $statement->fetchColumn() !== 1) {
+            throw new \RuntimeException('Unable to acquire the calendar lock.');
+        }
+    }
+
+    public function unlockCalendar(int $calendarId): void
+    {
+        $statement = $this->pdo->prepare('SELECT RELEASE_LOCK(:lock_name)');
+        $statement->execute(['lock_name' => sprintf('calendar_events_%d', $calendarId)]);
+    }
+
     public function findByCalendarAndRange(int $calendarId, TimeRange $rangeUtc): array
     {
         $statement = $this->pdo->prepare(

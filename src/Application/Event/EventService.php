@@ -60,9 +60,17 @@ final class EventService
             $actorId,
         );
 
-        $this->assertNoOverlap($event);
+        $this->eventRepository->lockCalendar($event->calendarId());
 
-        return $this->transactionManager->run(fn (): Event => $this->eventRepository->save($event));
+        try {
+            return $this->transactionManager->run(function () use ($event): Event {
+                $this->assertNoOverlap($event);
+
+                return $this->eventRepository->save($event);
+            });
+        } finally {
+            $this->eventRepository->unlockCalendar($event->calendarId());
+        }
     }
 
     public function update(int $actorId, int $eventId, array $payload): Event
@@ -86,9 +94,17 @@ final class EventService
             $actorId,
         );
 
-        $this->assertNoOverlap($event);
+        $this->eventRepository->lockCalendar($event->calendarId());
 
-        return $this->transactionManager->run(fn (): Event => $this->eventRepository->save($event));
+        try {
+            return $this->transactionManager->run(function () use ($event): Event {
+                $this->assertNoOverlap($event);
+
+                return $this->eventRepository->save($event);
+            });
+        } finally {
+            $this->eventRepository->unlockCalendar($event->calendarId());
+        }
     }
 
     public function delete(int $actorId, int $eventId): void

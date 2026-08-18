@@ -13,6 +13,8 @@ interface ViewPeriodInterface
 
     public function label(): string;
 
+    public function cursorDate(): DateTimeImmutable;
+
     public function range(): TimeRange;
 
     /** @return DateTimeImmutable[] */

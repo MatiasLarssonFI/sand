@@ -107,6 +107,6 @@ window.CALENDAR_APP = <?= json_encode([
     'currentUserId' => $currentUserId,
     'defaultWeeks' => $defaultWeeks,
     'state' => $initialState,
-], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT) ?>;
+], JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT | JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?: '{}' ?>;
 </script>
 <script src="/assets/app.js"></script>

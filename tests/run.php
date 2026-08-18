@@ -124,6 +124,14 @@ final class InMemoryEventRepository implements EventRepositoryInterface
     {
     }
 
+    public function lockCalendar(int $calendarId): void
+    {
+    }
+
+    public function unlockCalendar(int $calendarId): void
+    {
+    }
+
     public function findByCalendarAndRange(int $calendarId, TimeRange $rangeUtc): array
     {
         return array_values(array_filter($this->events, static function (Event $event) use ($calendarId, $rangeUtc): bool {
@@ -220,6 +228,7 @@ $users = [
     new User(1, 'Owner', 'owner@example.test'),
     new User(2, 'Editor', 'editor@example.test'),
     new User(3, 'Viewer', 'viewer@example.test'),
+    new User(4, 'Second Owner', 'second-owner@example.test'),
 ];
 $existingEvent = new Event(
     1,
@@ -278,13 +287,13 @@ assertThrows(
     'Overlapping events should be rejected.'
 );
 
-$membershipService->addMember(1, 1, 2, CalendarMember::ROLE_OWNER);
-assertTrue($calendarRepository->countOwners(1) === 2, 'Owners should be able to add another owner.');
-
 assertThrows(
     fn () => $membershipService->removeMember(1, 1),
     ValidationException::class,
     'Removing the last owner should be rejected.'
 );
+
+$membershipService->addMember(1, 1, 4, CalendarMember::ROLE_OWNER);
+assertTrue($calendarRepository->countOwners(1) === 2, 'Owners should be able to add another owner.');
 
 echo "All tests passed.\n";

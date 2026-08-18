@@ -6,6 +6,7 @@ return [
     'name' => getenv('APP_NAME') ?: 'Shared Calendar',
     'env' => getenv('APP_ENV') ?: 'production',
     'debug' => filter_var(getenv('APP_DEBUG') ?: '0', FILTER_VALIDATE_BOOL),
+    'session_secure_cookie' => filter_var(getenv('APP_SESSION_SECURE_COOKIE') ?: '0', FILTER_VALIDATE_BOOL),
     'base_url' => rtrim(getenv('APP_BASE_URL') ?: '', '/'),
     'timezone' => getenv('APP_TIMEZONE') ?: 'UTC',
     'default_view' => getenv('APP_DEFAULT_VIEW') ?: 'month',

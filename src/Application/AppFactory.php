@@ -34,6 +34,7 @@ final class AppFactory
             session_start([
                 'cookie_httponly' => true,
                 'cookie_samesite' => 'Lax',
+                'cookie_secure' => (bool) $appConfig['session_secure_cookie'],
                 'use_strict_mode' => true,
             ]);
         }
