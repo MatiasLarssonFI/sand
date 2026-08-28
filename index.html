@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>This Page Is PID Regulated</title>
+<meta
+  name="description"
+  content="An interactive, educational website about PID controllers — where the page itself is the plant being controlled."
+/>
+<link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <h1>This page is PID regulated.</h1>
+    <p class="hero-sub">
+      Every ball, box, and needle on this page is a <strong>process variable</strong> under
+      closed-loop control. Your mouse, keyboard, and scroll wheel are the disturbances and
+      setpoints. Move things around and watch the controllers fight to catch up.
+    </p>
+  </header>
+
+  <main>
+    <section class="content-section">
+      <h2>What is a PID controller?</h2>
+      <p>
+        A <strong>PID controller</strong> (Proportional&ndash;Integral&ndash;Derivative controller)
+        is a feedback-control algorithm that continuously computes an <em>error</em> &mdash; the
+        difference between a desired <strong>setpoint</strong> and a measured
+        <strong>process variable</strong> &mdash; and applies a correction built from three terms:
+      </p>
+      <ul>
+        <li><strong>P (Proportional)</strong> &mdash; reacts to the current error. Bigger error, bigger push.</li>
+        <li><strong>I (Integral)</strong> &mdash; reacts to accumulated past error, eliminating steady-state offset.</li>
+        <li><strong>D (Derivative)</strong> &mdash; reacts to the rate of change of the error, damping oscillation and predicting overshoot before it happens.</li>
+      </ul>
+      <p>
+        The demo below is a live PID loop: the setpoint is your pointer position, the process
+        variable is the ball's actual position, and the output drives the ball's velocity every
+        animation frame.
+      </p>
+    </section>
+
+    <section class="content-section demo-section">
+      <h2>Demo: chase the pointer</h2>
+      <p>Move your mouse inside the arena. Adjust the gains and watch the response change in real time.</p>
+
+      <div class="demo-layout">
+        <div id="follow-arena" class="arena" aria-label="PID mouse-follow demo arena">
+          <div id="follow-ball" class="ball"></div>
+        </div>
+
+        <div class="control-panel">
+          <label class="slider-row">
+            <span>K<sub>p</sub> (proportional)</span>
+            <input id="follow-kp" type="range" min="0" max="30" step="0.1" value="8" />
+            <output id="follow-kp-value">8.00</output>
+          </label>
+          <label class="slider-row">
+            <span>K<sub>i</sub> (integral)</span>
+            <input id="follow-ki" type="range" min="0" max="20" step="0.1" value="0" />
+            <output id="follow-ki-value">0.00</output>
+          </label>
+          <label class="slider-row">
+            <span>K<sub>d</sub> (derivative)</span>
+            <input id="follow-kd" type="range" min="0" max="10" step="0.05" value="1.5" />
+            <output id="follow-kd-value">1.50</output>
+          </label>
+
+          <div class="readouts">
+            <div><span class="readout-label">error</span><span id="follow-error">0.0</span> px</div>
+            <div><span class="readout-label">output</span><span id="follow-output">0.0</span> px/s</div>
+          </div>
+
+          <div class="button-row">
+            <button id="follow-pause" type="button" aria-pressed="false">Pause</button>
+            <button id="follow-reset" type="button">Reset</button>
+          </div>
+
+          <canvas id="follow-chart" class="chart" width="280" height="120"
+            aria-label="Chart of tracking error over time"></canvas>
+          <p class="chart-caption">
+            <span class="legend-dot legend-setpoint"></span> setpoint (zero error line)
+            &nbsp;&nbsp;<span class="legend-dot legend-measurement"></span> tracking error
+          </p>
+        </div>
+      </div>
+
+      <p class="tip">
+        <strong>Try it:</strong> Set K<sub>i</sub> and K<sub>d</sub> to 0 and raise K<sub>p</sub> &mdash;
+        the ball will overshoot and oscillate around the pointer. Add some K<sub>d</sub> back to damp
+        it. With K<sub>p</sub> alone the ball also lags slightly behind a moving target
+        (steady-state error); add a little K<sub>i</sub> to remove that lag.
+      </p>
+    </section>
+
+    <section class="content-section">
+      <h2>Overshoot, oscillation, and steady-state error</h2>
+      <p>
+        <strong>Overshoot</strong> happens when the controller pushes the process variable past the
+        setpoint before it settles &mdash; usually from too much proportional or integral gain, or
+        too little damping. <strong>Oscillation</strong> is repeated overshoot/undershoot around the
+        setpoint; if it never dies out, the loop is <em>unstable</em>. <strong>Steady-state error</strong>
+        is a persistent gap between setpoint and measurement even after transients settle &mdash;
+        proportional-only control almost always leaves some, which is precisely what the integral
+        term is designed to remove.
+      </p>
+    </section>
+
+    <section class="content-section demo-section">
+      <h2>Demo: integral windup</h2>
+      <p>
+        This needle is PID-controlled towards your pointer's horizontal position, but it's
+        physically clamped to the track &mdash; it cannot leave it, no matter how far outside the
+        track you move the mouse. Move the pointer far to one side, hold it there, then quickly move
+        it back to the middle of the track. With anti-windup <em>off</em>, watch the needle overshoot
+        wildly because the integral term kept accumulating error while the needle was pinned at its
+        limit. Turn anti-windup <em>on</em> and repeat &mdash; the overshoot disappears.
+      </p>
+
+      <div class="windup-layout">
+        <div id="windup-track" class="track" aria-label="PID windup demo track">
+          <div id="windup-needle" class="needle"></div>
+        </div>
+        <div class="control-panel">
+          <label class="toggle-row">
+            <input id="windup-toggle" type="checkbox" checked />
+            <span>Anti-windup enabled (clamp integral term)</span>
+          </label>
+          <div class="readouts">
+            <div><span class="readout-label">integral</span><span id="windup-integral">0.0</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Common pitfalls</h2>
+      <ul>
+        <li>
+          <strong>Integral windup</strong> &mdash; the integral term keeps growing while the actuator
+          is saturated (at a physical limit), causing large overshoot once the error condition ends.
+          Fixed by clamping the integral accumulator or the output (anti-windup), as shown above.
+        </li>
+        <li>
+          <strong>Derivative kick</strong> &mdash; a sudden setpoint change causes a huge spike in the
+          derivative term if it's computed from the error. This page's controllers use
+          <em>derivative-on-measurement</em> by default to avoid this.
+        </li>
+        <li>
+          <strong>Noisy derivative</strong> &mdash; differentiating noisy input amplifies the noise.
+          Filtering the measurement or the derivative term helps.
+        </li>
+        <li>
+          <strong>Over-aggressive tuning</strong> &mdash; pushing gains too high chases fast response
+          at the cost of stability; the demos above make this easy to feel directly.
+        </li>
+      </ul>
+    </section>
+
+    <section class="content-section demo-section">
+      <h2>Demo: keyboard-controlled size &amp; rotation</h2>
+      <p>
+        Hold <kbd>&uarr;</kbd>/<kbd>&darr;</kbd> to grow/shrink the box's target size, and
+        <kbd>&larr;</kbd>/<kbd>&rarr;</kbd> to rotate it. Independent PID loops smoothly chase these
+        step-changing targets rather than jumping instantly &mdash; a PID loop can act as a
+        physically-plausible actuator even when driven by discrete key presses.
+      </p>
+      <div id="keyboard-stage" class="stage" tabindex="0" aria-label="PID keyboard demo stage. Use arrow keys.">
+        <div id="keyboard-box" class="key-box"></div>
+        <p id="keyboard-hint" class="hint">Click here, then use the arrow keys</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Where PID controllers show up in the real world</h2>
+      <p>
+        PID control is everywhere engineers need to hold a measured quantity at (or smoothly track)
+        a target: cruise control and adaptive cruise control in cars, thermostats and HVAC systems,
+        drone and quadcopter stabilization, 3D printer hotend temperature control, industrial process
+        control (flow, pressure, level), robotics joint control, and audio/video sync loops. The math
+        is the same everywhere &mdash; only the setpoint, measurement, and actuator change.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>Built as a live demonstration &mdash; view source to see the PID loops driving this page.</p>
+  </footer>
+
+  <script src="js/pid.js"></script>
+  <script src="js/input.js"></script>
+  <script src="js/actuator.js"></script>
+  <script src="js/chart.js"></script>
+  <script src="js/demos/follow-demo.js"></script>
+  <script src="js/demos/keyboard-demo.js"></script>
+  <script src="js/demos/windup-demo.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
