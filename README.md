@@ -10,13 +10,13 @@ A simple shared calendar web app built as a layered PHP monolith with MariaDB pe
 
 ## Structure
 
-- `/public` - front controller and static assets
-- `/src/Application` - application services and app bootstrap
-- `/src/Domain` - entities, view periods, repository interfaces, shared exceptions
-- `/src/Infrastructure` - HTTP, persistence, security, and logging adapters
-- `/templates` - server-rendered views
-- `/database/schema.sql` - schema and seed data
-- `/tests/run.php` - lightweight service and domain tests
+- `/app/public` - front controller and static assets
+- `/app/src/Application` - application services and app bootstrap
+- `/app/src/Domain` - entities, view periods, repository interfaces, shared exceptions
+- `/app/src/Infrastructure` - HTTP, persistence, security, and logging adapters
+- `/app/templates` - server-rendered views
+- `/app/database/schema.sql` - schema and seed data
+- `/app/tests/run.php` - lightweight service and domain tests
 
 ## Features
 
@@ -31,7 +31,7 @@ A simple shared calendar web app built as a layered PHP monolith with MariaDB pe
 ## Local setup
 
 1. Create a MariaDB database.
-2. Import `database/schema.sql`.
+2. Import `app/database/schema.sql`.
 3. Configure environment variables:
 
 ```bash
@@ -50,7 +50,7 @@ export DB_PASSWORD=""
 4. Start the built-in server from the repository root:
 
 ```bash
-php -S 127.0.0.1:8000 -t public
+php -S 127.0.0.1:8000 -t app/public
 ```
 
 5. Open `http://127.0.0.1:8000`.
@@ -65,11 +65,11 @@ composer test
 
 ## SFTP deployment
 
-Upload the repository contents to your PHP hosting account so that the web root points at `/public`, then:
+Upload the repository contents to your PHP hosting account so that the web root points at `/app/public`, then:
 
-1. Import `database/schema.sql` into MariaDB.
-2. Set the environment variables supported in `config/app.php` and `config/database.php`.
-3. Ensure the `storage/logs` directory is writable by PHP.
+1. Import `app/database/schema.sql` into MariaDB.
+2. Set the environment variables supported in `app/config/app.php` and `app/config/database.php`.
+3. Ensure the `app/storage/logs` directory is writable by PHP.
 4. Set `APP_SESSION_SECURE_COOKIE=1` when serving the app over HTTPS.
 
 No container, queue worker, or build pipeline is required.

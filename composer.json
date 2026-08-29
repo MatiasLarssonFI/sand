@@ -5,10 +5,10 @@
   "require": {},
   "autoload": {
     "psr-4": {
-      "App\\": "src/"
+      "App\\": "app/src/"
     }
   },
   "scripts": {
-    "test": "php tests/run.php"
+    "test": "php app/tests/run.php"
   }
 }
