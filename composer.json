@@ -1,0 +1,14 @@
+{
+  "name": "matiaslarssonfi/sand",
+  "description": "Shared calendar web app",
+  "type": "project",
+  "require": {},
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/src/"
+    }
+  },
+  "scripts": {
+    "test": "php app/tests/run.php"
+  }
+}
